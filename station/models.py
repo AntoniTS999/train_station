@@ -66,6 +66,9 @@ class Journey(models.Model):
     arrival_time = models.DateTimeField()
     crew = models.ManyToManyField(Crew)
 
+    def __str__(self):
+        return f"Journey {self.route} {self.departure_time} {self.arrival_time}"
+
 
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -87,6 +90,10 @@ class Ticket(models.Model):
             raise ValidationError(f"Cargo must be between 1 to {self.journey.train.cargo_num}")
         if not(1 <= self.seat <= self.journey.train.places_in_cargo):
             raise ValidationError(f"Seat must be between 1 to {self.journey.train.places_in_cargo}")
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.full_clean()
+        return  super(Ticket, self).save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         return f"Trip {self.journey}- {self.cargo} - {self.seat}"
