@@ -28,7 +28,7 @@ class Train(models.Model):
 
     @property
     def is_small(self):
-        return self.cargo_num <= 50
+        return self.cargo_num <= 5
 
 
 class Station(models.Model):
