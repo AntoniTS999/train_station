@@ -77,8 +77,8 @@ class Order(models.Model):
 class Ticket(models.Model):
     cargo = models.PositiveIntegerField()
     seat = models.PositiveIntegerField()
-    journey = models.ForeignKey(Journey, on_delete=models.CASCADE, related_name="ticket")
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="ticket")
+    journey = models.ForeignKey(Journey, on_delete=models.CASCADE, related_name="tickets")
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="tickets")
 
     class Meta:
         constraints = [
@@ -96,7 +96,7 @@ class Ticket(models.Model):
         return  super(Ticket, self).save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
-        return f"Trip {self.journey}- {self.cargo} - {self.seat}"
+        return f"{self.journey}- {self.cargo} - {self.seat}"
 
 
 
