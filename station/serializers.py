@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
+from rest_framework.validators import UniqueTogetherValidator
 
 from station.models import Train, Journey, Crew, Route, Station, Order, Ticket
 
@@ -47,6 +48,25 @@ class TicketSerializer(ModelSerializer):
     class Meta:
         model = Ticket
         fields = ["id", "cargo", "seat", "journey" ]
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Ticket.objects.all(),
+                fields=["journey", "cargo", "seat"],
+                message="Ticket with the same cargo, seat and journey already exists"
+            )
+        ]
+    def validate(self, value):
+        cargo = value.get("cargo")
+        seat = value.get("seat")
+        journey = value.get("journey")
+        cargo_num = journey.train.cargo_num
+        places_in_cargo = journey.train.places_in_cargo
+        Ticket.validate_seat(seat, places_in_cargo)
+        Ticket.validate_cargo_num(cargo, cargo_num)
+        return value
+
+
 
 
 class OrderSerializer(ModelSerializer):

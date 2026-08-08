@@ -98,6 +98,17 @@ class Ticket(models.Model):
     def __str__(self):
         return f"{self.journey}- {self.cargo} - {self.seat}"
 
+    @staticmethod
+    def validate_cargo_num(cargo, cargo_num):
+        if not(1 <= cargo <= cargo_num):
+            raise ValidationError(f"Cargo {cargo} is out of range")
+    @staticmethod
+    def validate_seat(seat, places_in_cargo):
+        if not(1 <= seat <= places_in_cargo):
+            raise ValidationError(f"Seat {seat} is out of range")
+
+
+
 
 
 

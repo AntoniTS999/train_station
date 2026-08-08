@@ -9,6 +9,7 @@ router = DefaultRouter()
 router.register("trains", TrainViewSet)
 router.register("journey", JourneyViewSet)
 router.register("orders", OrderViewSet)
+
 urlpatterns = [
     path("", include(router.urls)),
 ]

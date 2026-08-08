@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
-from station.models import Train, Journey, Order
+from station.models import Train, Journey, Order, Ticket
 from station.serializers import TrainSerializer, JourneySerializer, JourneyListSerializer, JourneyDetailSerializer, \
-    OrderSerializer
+    OrderSerializer, TicketSerializer
 
 
 class TrainViewSet(ModelViewSet):
@@ -46,5 +46,8 @@ class OrderViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+
 
 
