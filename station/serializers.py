@@ -1,7 +1,9 @@
+from django.db import transaction
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
-from station.models import Train, Journey, Crew, Route, Station, Order
+from station.models import Train, Journey, Crew, Route, Station, Order, Ticket
 
 
 class TrainSerializer(ModelSerializer):
@@ -41,7 +43,26 @@ class JourneyDetailSerializer(JourneyListSerializer):
     route = RouteSerializer(read_only=True)
 
 
+class TicketSerializer(ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["id", "cargo", "seat", "journey" ]
+
+
 class OrderSerializer(ModelSerializer):
+    tickets =TicketSerializer(many=True, allow_empty=False)
     class Meta:
         model = Order
         fields = ["id", "created_at", "tickets"]
+
+    def create(self, validated_data):
+        tickets_data = validated_data.pop("tickets")
+        with transaction.atomic():
+            order = Order.objects.create(**validated_data)
+            for ticket in tickets_data:
+                try:
+                    Ticket.objects.create(order=order, **ticket)
+                except Exception as e:
+                    raise ValidationError({"tickets": str(e)})
+        return order
+
