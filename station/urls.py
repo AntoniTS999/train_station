@@ -7,7 +7,7 @@ app_name = "station"
 
 router = DefaultRouter()
 router.register("trains", TrainViewSet)
-router.register("journeys", JourneyViewSet)
+router.register("journey", JourneyViewSet)
 urlpatterns = [
     path("", include(router.urls)),
 ]
