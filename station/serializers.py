@@ -34,7 +34,10 @@ class JourneySerializer(ModelSerializer):
 
 
 class JourneyListSerializer(JourneySerializer):
-    train = serializers.SlugRelatedField(many=False, read_only=True, slug_field="name")
+    route = RouteSerializer(read_only=True)
+    class Meta:
+        model = Journey
+        fields = ["id", "route", "train", "departure_time", "arrival_time", "crew"]
 
 
 
@@ -66,8 +69,8 @@ class TicketSerializer(ModelSerializer):
         Ticket.validate_cargo_num(cargo, cargo_num)
         return value
 
-
-
+class TicketDetailSerializer(TicketSerializer):
+    journey = JourneyDetailSerializer(read_only=True)
 
 class OrderSerializer(ModelSerializer):
     tickets =TicketSerializer(many=True, allow_empty=False)
@@ -85,4 +88,7 @@ class OrderSerializer(ModelSerializer):
                 except Exception as e:
                     raise ValidationError({"tickets": str(e)})
         return order
+
+class OrderDetailSerializer(OrderSerializer):
+    tickets = TicketDetailSerializer(many=True, allow_empty=False)
 

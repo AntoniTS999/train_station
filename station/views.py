@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from station.models import Train, Journey, Order, Ticket
 from station.serializers import TrainSerializer, JourneySerializer, JourneyListSerializer, JourneyDetailSerializer, \
-    OrderSerializer, TicketSerializer
+    OrderSerializer, TicketSerializer, OrderDetailSerializer
 
 
 class TrainViewSet(ModelViewSet):
@@ -36,6 +36,7 @@ class JourneyViewSet(ModelViewSet):
 class OrderViewSet(ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    http_method_names = ["get", "post", "delete", "head", "options"]
 
     def get_queryset(self):
         qs = Order.objects.filter(user=self.request.user)
@@ -47,7 +48,10 @@ class OrderViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-
-
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return OrderDetailSerializer
+        else:
+            return OrderSerializer
 
 
