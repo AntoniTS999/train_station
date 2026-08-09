@@ -75,7 +75,8 @@ class OrderViewSet(ModelViewSet):
         if self.action in ["list", "retrieve"]:
             return qs.prefetch_related("tickets__journey__train",
                                        "tickets__journey__route__source",
-                                       "tickets__journey__route__destination")
+                                       "tickets__journey__route__destination",
+                                       "tickets__journey__crew",)
         else:
             return qs.all()
 
