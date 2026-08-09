@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.db.models import Count, F
 from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import ModelViewSet
 from station.models import Train, Journey, Order, Ticket
@@ -39,7 +40,7 @@ class JourneyViewSet(ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
-        if self.action in ["list", "retrieve"]:
+        if self.action in ["list"]:
             train_type_filter = self.request.query_params.get("train", None)
             date_filter = self.request.query_params.get("date", None)
             source_filter = self.request.query_params.get("source", None)
@@ -59,9 +60,9 @@ class JourneyViewSet(ModelViewSet):
             if destination_filter:
                 queryset = queryset.filter(route__destination__name__icontains=destination_filter)
 
-            return queryset
+            return queryset.annotate(available=F("train__cargo_num") * F("train__places_in_cargo") - Count("tickets"))
         else:
-            return queryset
+            return queryset.annotate(taken=Count("tickets"))
 
 
 class OrderViewSet(ModelViewSet):

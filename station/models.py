@@ -30,6 +30,10 @@ class Train(models.Model):
     def is_small(self):
         return self.cargo_num <= 5
 
+    @property
+    def total_places(self):
+        return self.places_in_cargo * self.cargo_num
+
 
 class Station(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -84,6 +88,7 @@ class Ticket(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["journey", "cargo", "seat"], name="unique_ticket_cargo")
         ]
+        ordering = ["journey", "cargo", "seat"]
 
     def clean(self):
         if not(1 <= self.cargo <= self.journey.train.cargo_num):
