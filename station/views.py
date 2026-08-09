@@ -9,7 +9,7 @@ from station.serializers import (TrainSerializer,
                                  JourneyListSerializer,
                                  JourneyDetailSerializer,
                                  OrderSerializer,
-                                 OrderDetailSerializer)
+                                 OrderDetailSerializer, OrderListSerializer)
 
 
 class TrainViewSet(ModelViewSet):
@@ -73,7 +73,9 @@ class OrderViewSet(ModelViewSet):
     def get_queryset(self):
         qs = Order.objects.filter(user=self.request.user)
         if self.action in ["list", "retrieve"]:
-            return qs.prefetch_related("tickets")
+            return qs.prefetch_related("tickets__journey__train",
+                                       "tickets__journey__route__source",
+                                       "tickets__journey__route__destination")
         else:
             return qs.all()
 
@@ -81,9 +83,11 @@ class OrderViewSet(ModelViewSet):
         serializer.save(user=self.request.user)
 
     def get_serializer_class(self):
+        if self.action == "list":
+            return OrderListSerializer
         if self.action == "retrieve":
             return OrderDetailSerializer
         else:
-            return OrderSerializer
+            return self.serializer_class
 
 

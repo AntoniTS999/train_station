@@ -66,6 +66,17 @@ class TicketSerializer(ModelSerializer):
         Ticket.validate_cargo_num(cargo, cargo_num)
         return value
 
+class JourneyInTicketListSerializer(ModelSerializer):
+    train_name = serializers.CharField(source="train.name", read_only=True)
+    source = serializers.CharField(source="route.source", read_only=True)
+    destination = serializers.CharField(source="route.destination", read_only=True)
+    class Meta:
+        model = Journey
+        fields = ["id", "train_name", "source", "destination", "departure_time", "arrival_time"]
+
+
+class TicketListSerializer(TicketSerializer):
+    journey = JourneyInTicketListSerializer(read_only=True)
 
 
 class JourneyDetailSerializer(ModelSerializer):
@@ -98,6 +109,9 @@ class OrderSerializer(ModelSerializer):
                 except Exception as e:
                     raise ValidationError({"tickets": str(e)})
         return order
+
+class OrderListSerializer(OrderSerializer):
+    tickets = TicketListSerializer(many=True, read_only=True)
 
 class OrderDetailSerializer(OrderSerializer):
     tickets = TicketDetailSerializer(many=True, read_only=True)
