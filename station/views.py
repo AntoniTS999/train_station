@@ -4,6 +4,7 @@ from django.db.models import Count, F
 from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import ModelViewSet
 from station.models import Train, Journey, Order, Ticket
+from station.pagination import OrderPagination
 from station.serializers import (TrainSerializer,
                                  JourneySerializer,
                                  JourneyListSerializer,
@@ -68,6 +69,7 @@ class JourneyViewSet(ModelViewSet):
 class OrderViewSet(ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    pagination_class = OrderPagination
     http_method_names = ["get", "post", "delete", "head", "options"]
 
     def get_queryset(self):
