@@ -91,9 +91,9 @@ class Ticket(models.Model):
         if not(1 <= self.seat <= self.journey.train.places_in_cargo):
             raise ValidationError(f"Seat must be between 1 to {self.journey.train.places_in_cargo}")
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, *args, **kwargs):
         self.full_clean()
-        return  super(Ticket, self).save(force_insert, force_update, using, update_fields)
+        return  super(Ticket, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.journey}- {self.cargo} - {self.seat}"
