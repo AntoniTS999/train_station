@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "user",
     "rest_framework",
     "debug_toolbar",
-    "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
@@ -133,4 +132,5 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 5,
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
 }
