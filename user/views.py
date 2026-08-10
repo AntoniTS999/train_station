@@ -9,6 +9,7 @@ from user.serializers import UserSerializer
 
 class CreateUserView(CreateAPIView):
     serializer_class = UserSerializer
+    permission_classes = ()
 
 class ManageUserView(RetrieveUpdateAPIView):
     serializer_class = UserSerializer
