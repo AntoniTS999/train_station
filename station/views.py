@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db.models import Count, F
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 from rest_framework.viewsets import ModelViewSet
 from station.models import Train, Journey, Order, Ticket
 from station.pagination import OrderPagination
@@ -12,6 +13,14 @@ from station.serializers import (TrainSerializer,
                                  OrderSerializer,
                                  OrderDetailSerializer, OrderListSerializer)
 
+
+class IsAuthenticatedReadOnlyOrAdmin(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return request.user and request.user.is_authenticated
+        if request.user and request.user.is_authenticated and request.user.is_staff:
+            return True
+        return False
 
 class TrainViewSet(ModelViewSet):
     serializer_class = TrainSerializer
