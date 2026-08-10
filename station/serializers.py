@@ -7,6 +7,12 @@ from rest_framework.validators import UniqueTogetherValidator
 from station.models import Train, Journey, Crew, Route, Station, Order, Ticket
 
 
+class TrainImageSerializer(ModelSerializer):
+    class Meta:
+        model = Train
+        fields = ["id", "image"]
+
+
 class TrainSerializer(ModelSerializer):
     train_type = serializers.CharField(source="train_type.name", read_only=True)
     class Meta:

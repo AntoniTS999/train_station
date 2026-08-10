@@ -1,6 +1,10 @@
+import uuid
+from pathlib import Path
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.text import slugify
 
 
 class TrainType(models.Model):
@@ -12,12 +16,20 @@ class TrainType(models.Model):
     class Meta:
         verbose_name_plural = "Train Types"
 
+def train_image_path_maker(instance, filename):
+    train_name_slug = slugify(instance.name)
+    unique_id = uuid.uuid4()
+    extension = Path(filename).suffix
+    return f"uploads/trains/{train_name_slug}-{unique_id}{extension}"
+
+
 
 class Train(models.Model):
     name = models.CharField(max_length=100)
     cargo_num = models.IntegerField() # number of wagons
     places_in_cargo = models.IntegerField() # capacity of each
     train_type = models.ForeignKey(TrainType, on_delete=models.CASCADE, related_name="trains")
+    image = models.ImageField(upload_to=train_image_path_maker, null=True, blank=True)
 
     def __str__(self):
         return f"Train:{self.id}, name={self.name}, cargo_num={self.cargo_num}"

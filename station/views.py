@@ -1,8 +1,11 @@
 from datetime import datetime
 
 from django.db.models import Count, F
+from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from station.models import Train, Journey, Order, Ticket
 from station.pagination import OrderPagination
@@ -11,7 +14,7 @@ from station.serializers import (TrainSerializer,
                                  JourneyListSerializer,
                                  JourneyDetailSerializer,
                                  OrderSerializer,
-                                 OrderDetailSerializer, OrderListSerializer)
+                                 OrderDetailSerializer, OrderListSerializer, TrainImageSerializer)
 
 
 class IsAuthenticatedReadOnlyOrAdmin(BasePermission):
@@ -33,7 +36,21 @@ class TrainViewSet(ModelViewSet):
         else:
             return Train.objects.all()
 
+    @action(methods=["POST"], detail=True, url_path="upload_image", url_name="upload_image")
+    def upload_image(self, request, **kwargs):
+        train = self.get_object()
+        serializer = self.get_serializer_class(train, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def get_serializer_class(self):
+        if self.action == "upload_image":
+            return TrainImageSerializer
+        else:
+            return self.serializer_class
 class JourneyViewSet(ModelViewSet):
     queryset = Journey.objects.all().select_related("route",
                                                         "route__source",
