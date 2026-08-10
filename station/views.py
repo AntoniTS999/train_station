@@ -25,6 +25,7 @@ class IsAuthenticatedReadOnlyOrAdmin(BasePermission):
 class TrainViewSet(ModelViewSet):
     serializer_class = TrainSerializer
     queryset = Train.objects.all()
+    permission_classes = [IsAuthenticatedReadOnlyOrAdmin]
 
     def get_queryset(self):
         if self.action in ["list", "retrieve"]:
@@ -39,6 +40,7 @@ class JourneyViewSet(ModelViewSet):
                                                         "route__destination",
                                                         "train",
                                                         "train__train_type").prefetch_related("crew")
+    permission_classes = [IsAuthenticatedReadOnlyOrAdmin]
 
     def get_serializer_class(self):
         if self.action in ["list"]:
