@@ -1,9 +1,12 @@
 from datetime import datetime
 
 from django.db.models import Count, F
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -36,10 +39,10 @@ class TrainViewSet(ModelViewSet):
         else:
             return Train.objects.all()
 
-    @action(methods=["POST"], detail=True, url_path="upload_image", url_name="upload_image")
+    @action(methods=["POST"], detail=True, url_path="upload_image", url_name="upload_image",     parser_classes=[MultiPartParser, FormParser],)
     def upload_image(self, request, **kwargs):
         train = self.get_object()
-        serializer = self.get_serializer_class(train, data=request.data, partial=True)
+        serializer = self.get_serializer_class()(train, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -74,6 +77,7 @@ class JourneyViewSet(ModelViewSet):
             date_filter = self.request.query_params.get("date", None)
             source_filter = self.request.query_params.get("source", None)
             destination_filter = self.request.query_params.get("destination", None)
+
             if train_type_filter:
                 queryset = queryset.filter(train__train_type__name__icontains=train_type_filter)
 
@@ -92,6 +96,33 @@ class JourneyViewSet(ModelViewSet):
             return queryset.annotate(available=F("train__cargo_num") * F("train__places_in_cargo") - Count("tickets"))
         else:
             return queryset.annotate(taken=Count("tickets"))
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="date",
+                type=OpenApiTypes.STR,
+                description="The date to filter by",
+            ),
+            OpenApiParameter(
+                name="source",
+                type=OpenApiTypes.STR,
+                description="The source to filter by",
+            ),
+            OpenApiParameter(
+                name="destination",
+                type=OpenApiTypes.STR,
+                description="The destination to filter by",
+            ),
+            OpenApiParameter(
+                name="train",
+                type=OpenApiTypes.STR,
+                description="The train to filter by",
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class OrderViewSet(ModelViewSet):

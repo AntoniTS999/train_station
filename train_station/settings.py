@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "station",
     "user",
     "rest_framework",
+    "drf_spectacular",
     "debug_toolbar",
 ]
 
@@ -136,10 +137,18 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 5,
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
     "ROTATE_REFRESH_TOKEN": True,
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Train station API",
+    "DESCRIPTION": "API for booking tickets",
+    "COMPONENT_SPLIT_REQUEST": True,
+    "VERSION": "1.0",
 }

@@ -39,7 +39,7 @@ class Train(models.Model):
         ordering = ["cargo_num"]
 
     @property
-    def is_small(self):
+    def is_small(self) -> bool:
         return self.cargo_num <= 5
 
     @property
