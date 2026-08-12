@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 from rest_framework.validators import UniqueTogetherValidator
 
-from station.models import Train, Journey, Crew, Route, Station, Order, Ticket
+from station.models import Train, Journey, Crew, Route, Station, Order, Ticket, TrainType
 
 
 class TrainImageSerializer(ModelSerializer):
@@ -14,10 +14,14 @@ class TrainImageSerializer(ModelSerializer):
 
 
 class TrainSerializer(ModelSerializer):
-    train_type = serializers.CharField(source="train_type.name", read_only=True)
     class Meta:
         model = Train
         fields = ["id", "name", "cargo_num", "places_in_cargo", "train_type", "is_small"]
+
+
+class TrainListSerializer(TrainSerializer):
+    train_type = serializers.SlugRelatedField(slug_field="name", read_only=True)
+
 
 class CrewSerializer(ModelSerializer):
     class Meta:

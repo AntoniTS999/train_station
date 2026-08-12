@@ -18,7 +18,10 @@ from station.serializers import (TrainSerializer,
                                  JourneyListSerializer,
                                  JourneyDetailSerializer,
                                  OrderSerializer,
-                                 OrderDetailSerializer, OrderListSerializer, TrainImageSerializer)
+                                 OrderDetailSerializer,
+                                 OrderListSerializer,
+                                 TrainImageSerializer,
+                                 TrainListSerializer)
 
 
 class IsAuthenticatedReadOnlyOrAdmin(BasePermission):
@@ -54,6 +57,8 @@ class TrainViewSet(ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_serializer_class(self):
+        if self.action in ["list", "retrieve"]:
+            return TrainListSerializer
         if self.action == "upload_image":
             return TrainImageSerializer
         else:
