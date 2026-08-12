@@ -7,8 +7,9 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle, ScopedRateThrottle
 from rest_framework.viewsets import ModelViewSet
 from station.models import Train, Journey, Order, Ticket
 from station.pagination import OrderPagination
@@ -31,7 +32,10 @@ class IsAuthenticatedReadOnlyOrAdmin(BasePermission):
 class TrainViewSet(ModelViewSet):
     serializer_class = TrainSerializer
     queryset = Train.objects.all()
+    throttle_scope = "train_view"
+    throttle_classes = [ScopedRateThrottle]
     permission_classes = [IsAuthenticatedReadOnlyOrAdmin]
+
 
     def get_queryset(self):
         if self.action in ["list", "retrieve"]:
@@ -130,6 +134,7 @@ class OrderViewSet(ModelViewSet):
     serializer_class = OrderSerializer
     pagination_class = OrderPagination
     http_method_names = ["get", "post", "delete", "head", "options"]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         qs = Order.objects.filter(user=self.request.user)
