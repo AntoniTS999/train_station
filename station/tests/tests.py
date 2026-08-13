@@ -12,6 +12,7 @@ from station.models import Train, TrainType, Route, Station, Crew, Journey
 from station.serializers import TrainSerializer
 
 TRAIN_LIST_URL = reverse("station:train-list")
+JOURNEY_LIST_URL = reverse("station:journey-list")
 
 class UnauthenticatedTrainApi(APITestCase):
     """Test checking if not authenticated user can get the access to API"""
@@ -177,22 +178,37 @@ class FilteringTestCase(APITestCase):
         journey.crew.add(crew)
 
         filtering_params_train_type = {
-            "train": train_type.id,
+            "train": train_type.name,
         }
         filtering_params_departure_time = {
-            "date": departure_time,
+            "date": departure_time.date().isoformat(),
         }
         filtering_params_source = {
-            "source": station_start
+            "source": station_start.name,
         }
         filtering_params_destination = {
-            "destination": station_end
+            "destination": station_end.name,
         }
 
-        response = self.client.get(TRAIN_LIST_URL, filtering_params_train_type)
+        response = self.client.get(JOURNEY_LIST_URL, filtering_params_train_type)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()["results"]), 1)
+        self.assertEqual(response.json()["results"][0]["id"], journey.id)
 
+        response = self.client.get(JOURNEY_LIST_URL, filtering_params_departure_time)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()["results"]), 1)
+        self.assertEqual(response.json()["results"][0]["id"], journey.id)
+
+        response = self.client.get(JOURNEY_LIST_URL, filtering_params_source)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()["results"]), 1)
+        self.assertEqual(response.json()["results"][0]["id"], journey.id)
+
+        response = self.client.get(JOURNEY_LIST_URL, filtering_params_destination)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()["results"]), 1)
+        self.assertEqual(response.json()["results"][0]["id"], journey.id)
 
 
 
