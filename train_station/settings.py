@@ -126,8 +126,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-MEDIA_ROOT = BASE_DIR / "media"
+
 MEDIA_URL = "/media/"
+if os.environ.get("DB_HOST"):
+    MEDIA_ROOT = "/vol/web/media"
+else:
+    MEDIA_ROOT = BASE_DIR / "media"
 
 AUTH_USER_MODEL = "user.User"
 
