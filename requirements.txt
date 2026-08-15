@@ -27,3 +27,4 @@ typing_extensions==4.16.0
 unify==0.5
 untokenize==0.1.1
 uritemplate==4.2.0
+psycopg2-binary==2.9.9
