@@ -97,10 +97,8 @@ class JourneyViewSet(ModelViewSet):
                     raise ValidationError("Please provide a valid date in YYYY-MM-DD format")
                 queryset = queryset.filter(departure_time__date=date_filter)
 
-            if source_filter:
-                queryset = queryset.filter(route__source__name__icontains=source_filter)
-            if destination_filter:
-                queryset = queryset.filter(route__destination__name__icontains=destination_filter)
+            if source_filter and destination_filter:
+                queryset = queryset.filter(route__source__name__icontains=source_filter, route__destination__name__icontains=destination_filter)
 
             return queryset.annotate(available=F("train__cargo_num") * F("train__places_in_cargo") - Count("tickets"))
         else:
