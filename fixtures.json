@@ -1,0 +1,177 @@
+[
+  {
+    "model": "user.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$2910bc36dc22$3to13uSF4rtQ3iahWYQw/xWalNWboZ/UvHjkyVl1blU=",
+      "last_login": null,
+      "is_superuser": true,
+      "email": "admin@gmail.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2026-01-01T08:00:00Z"
+    }
+  },
+
+  {
+    "model": "station.station",
+    "pk": 1,
+    "fields": {
+      "name": "Warsaw Central",
+      "latitude": 52.2297,
+      "longitude": 21.0122
+    }
+  },
+  {
+    "model": "station.station",
+    "pk": 2,
+    "fields": {
+      "name": "Krakow Main",
+      "latitude": 50.0647,
+      "longitude": 19.9450
+    }
+  },
+  {
+    "model": "station.station",
+    "pk": 3,
+    "fields": {
+      "name": "Gdansk Central",
+      "latitude": 54.3520,
+      "longitude": 18.6466
+    }
+  },
+  {
+    "model": "station.station",
+    "pk": 4,
+    "fields": {
+      "name": "Wroclaw Main",
+      "latitude": 51.1079,
+      "longitude": 17.0385
+    }
+  },
+
+  {
+    "model": "station.route",
+    "pk": 1,
+    "fields": {
+      "source": 1,
+      "destination": 2,
+      "distance": 293
+    }
+  },
+  {
+    "model": "station.route",
+    "pk": 2,
+    "fields": {
+      "source": 1,
+      "destination": 3,
+      "distance": 340
+    }
+  },
+  {
+    "model": "station.route",
+    "pk": 3,
+    "fields": {
+      "source": 2,
+      "destination": 4,
+      "distance": 271
+    }
+  },
+
+  {
+    "model": "station.traintype",
+    "pk": 1,
+    "fields": {
+      "name": "Express InterCity"
+    }
+  },
+  {
+    "model": "station.traintype",
+    "pk": 2,
+    "fields": {
+      "name": "Regional"
+    }
+  },
+
+  {
+    "model": "station.train",
+    "pk": 1,
+    "fields": {
+      "name": "Pendolino EIP-101",
+      "cargo_num": 8,
+      "places_in_cargo": 60,
+      "train_type": 1,
+      "image": ""
+    }
+  },
+  {
+    "model": "station.train",
+    "pk": 2,
+    "fields": {
+      "name": "Regio REG-205",
+      "cargo_num": 4,
+      "places_in_cargo": 40,
+      "train_type": 2,
+      "image": ""
+    }
+  },
+
+  {
+    "model": "station.crew",
+    "pk": 1,
+    "fields": {
+      "first_name": "Jan",
+      "last_name": "Kowalski"
+    }
+  },
+  {
+    "model": "station.crew",
+    "pk": 2,
+    "fields": {
+      "first_name": "Anna",
+      "last_name": "Nowak"
+    }
+  },
+  {
+    "model": "station.crew",
+    "pk": 3,
+    "fields": {
+      "first_name": "Piotr",
+      "last_name": "Wiśniewski"
+    }
+  },
+
+  {
+    "model": "station.journey",
+    "pk": 1,
+    "fields": {
+      "route": 1,
+      "train": 1,
+      "departure_time": "2026-09-01T08:00:00Z",
+      "arrival_time": "2026-09-01T10:45:00Z",
+      "crew": [1, 2]
+    }
+  },
+  {
+    "model": "station.journey",
+    "pk": 2,
+    "fields": {
+      "route": 2,
+      "train": 2,
+      "departure_time": "2026-09-02T09:30:00Z",
+      "arrival_time": "2026-09-02T14:15:00Z",
+      "crew": [3]
+    }
+  },
+  {
+    "model": "station.journey",
+    "pk": 3,
+    "fields": {
+      "route": 3,
+      "train": 1,
+      "departure_time": "2026-09-03T12:00:00Z",
+      "arrival_time": "2026-09-03T15:20:00Z",
+      "crew": [1, 3]
+    }
+  }
+]
