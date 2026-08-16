@@ -126,7 +126,7 @@ http://localhost:8000/api/v1/schema/redoc/
 docker-compose exec app python manage.py test
 ```
 
-Tests cover: authentication and permissions (admin vs. regular user), serializers, journey filtering (by train type, date, source and destination), and image upload.
+Tests cover: authentication and permissions (admin vs. regular user), models, serializers, journey filtering (by train type, date, source and destination), and image upload.
 
 ## Project Structure
 

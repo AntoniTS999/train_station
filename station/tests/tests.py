@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
 from station.models import Train, TrainType, Route, Station, Crew, Journey
-from station.serializers import TrainSerializer
+from station.serializers import TrainSerializer, JourneySerializer
 
 TRAIN_LIST_URL = reverse("station:train-list")
 JOURNEY_LIST_URL = reverse("station:journey-list")
@@ -78,6 +78,7 @@ class AuthenticatedUserTrainAPI(APITestCase):
 
 
 class AdminUserTrainAPI(APITestCase):
+
     def setUp(self):
         self.client = APIClient()
         admin_user = get_user_model().objects.create_user(
@@ -101,17 +102,66 @@ class AdminUserTrainAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["name"], data["name"])
 
+    def test_update_train(self):
+        """Test if train can be updated"""
+        train_type = TrainType.objects.create(name="TestType")
+        train = Train.objects.create(name="TestTrain", train_type=train_type, cargo_num=2, places_in_cargo=10)
+        data_update = {
+            "cargo_num": 3,
+        }
+        url = reverse("station:train-detail", args=[train.id])
+        response = self.client.patch(url, data_update)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["cargo_num"], data_update["cargo_num"])
 
 class TrainSerializerTest(APITestCase):
-    def test_serializer_fields(self):
-        """Test if serializer fields are correct"""
-
+    def create_sample_train(self, **kwargs):
         train_type = TrainType.objects.create(name="Test")
         train = Train.objects.create(name="TestTrain", cargo_num=2, places_in_cargo=12, train_type=train_type)
+        return train
+
+    def test_serializer_fields(self):
+        """Test if serializer fields are correct"""
+        train = self.create_sample_train()
         serializer = TrainSerializer(train)
         self.assertEqual(serializer.data["name"], train.name)
         self.assertEqual(serializer.data["cargo_num"], train.cargo_num)
         self.assertEqual(serializer.data["train_type"], train.train_type.id)
+
+    def test_the_lack_of_fields(self):
+        """Test if error appear if fields are not correct"""
+        data = {
+            "name": "TestTrain",
+            "cargo_num": 2,
+        }
+        serializer = TrainSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("places_in_cargo", serializer.errors)
+        self.assertIn("train_type", serializer.errors)
+
+
+class JourneySerializerTest(APITestCase):
+    def setUp(self):
+        self.train_type = TrainType.objects.create(name="TestType")
+        self.train = Train.objects.create(name="TestTrain", cargo_num=2, places_in_cargo=10, train_type=self.train_type)
+        self.station_source = Station.objects.create(name="Station A")
+        self.station_destination = Station.objects.create(name="Station B")
+        self.route = Route.objects.create(source=self.station_source, destination=self.station_destination, distance=10)
+        self.departure_time = timezone.now()
+        self.arrival_time = timezone.now() + timedelta(hours=1)
+
+    def test_journey_serializer_available_field_is_read_only(self):
+        """Test if read-only field is not available to serializer"""
+        data = {
+            "route": self.route.id,
+            "train": self.train.id,
+            "departure_time": self.departure_time,
+            "arrival_time": self.arrival_time,
+            "available": 999,
+        }
+        serializer = JourneySerializer(data=data)
+        serializer.is_valid()
+        self.assertNotIn("available", serializer.validated_data)
 
 
 class ImageUploadTest(APITestCase):
@@ -221,6 +271,33 @@ class FilteringTestCase(APITestCase):
         self.assertEqual(len(response.json()["results"]), 1)
         self.assertEqual(response.json()["results"][0]["id"], journey_stations_filter.id)
 
+
+class ModelTests(APITestCase):
+    """Tests check if models str return data correctly"""
+
+    def test_train_type_str(self):
+        train_type = TrainType.objects.create(name="TestTrainType")
+        self.assertEqual(str(train_type), train_type.name)
+
+    def test_crew_str(self):
+        crew = Crew.objects.create(first_name="FirstName", last_name="LastName")
+        self.assertEqual(str(crew), f"{crew.first_name} {crew.last_name}")
+
+    def test_journey_str(self):
+        train_type = TrainType.objects.create(name="TestType")
+        train = Train.objects.create(name="TestTrain", cargo_num=2, places_in_cargo=10, train_type=train_type)
+        station_source = Station.objects.create(name="Station A")
+        station_destination = Station.objects.create(name="Station B")
+        route = Route.objects.create(source=station_source, destination=station_destination, distance=10)
+        departure_time = timezone.now()
+        arrival_time = timezone.now() + timedelta(hours=1)
+        journey = Journey.objects.create(
+            route=route,
+            departure_time=departure_time,
+            arrival_time=arrival_time,
+            train=train,
+        )
+        self.assertEqual(str(journey), f"Journey {journey.route} {journey.departure_time} {journey.arrival_time}")
 
 
 
