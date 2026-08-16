@@ -1,15 +1,11 @@
-import tempfile
 from datetime import timedelta
 
-from PIL import Image
-from django.contrib.auth import get_user_model
-from django.urls import reverse
 from django.utils import timezone
-from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+
+from rest_framework.test import APITestCase
 
 from station.models import Train, TrainType, Route, Station, Crew, Journey
-from station.serializers import TrainSerializer, JourneySerializer
+
 
 class ModelTests(APITestCase):
     """Tests check if models str return data correctly"""
