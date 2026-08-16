@@ -1,15 +1,12 @@
-import tempfile
 from datetime import timedelta
-
-from PIL import Image
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
-from station.models import Train, TrainType, Route, Station, Crew, Journey, Order, Ticket
-from station.serializers import TrainSerializer, JourneySerializer, OrderSerializer
+from station.models import Train, TrainType, Route, Station, Journey, Order, Ticket
+from station.serializers import OrderSerializer
 
 ORDER_LIST_URL = reverse("station:order-list")
 
