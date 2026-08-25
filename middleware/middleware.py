@@ -1,6 +1,6 @@
 import time
 
-def simple_middleware(get_response):
+def time_measure_middleware(get_response):
     """Middleware for measuring time of proceeding request"""
 
     def middleware(request):

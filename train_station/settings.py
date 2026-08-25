@@ -55,7 +55,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "middleware.middleware.simple_middleware"
+    "middleware.middleware.time_measure_middleware"
 ]
 
 ROOT_URLCONF = "train_station.urls"
